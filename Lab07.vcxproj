@@ -139,15 +139,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="angle.cpp" />
     <ClCompile Include="ground.cpp" />
     <ClCompile Include="Lab07.cpp" />
     <ClCompile Include="position.cpp" />
+    <ClCompile Include="acceleration.cpp" />
+    <ClCompile Include="velocity.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="uiDraw.cpp" />
     <ClCompile Include="uiInteract.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ground.h" />
+    <ClInclude Include="acceleration.h" />
+    <ClInclude Include="velocity.h" />
+    <ClInclude Include="inertia.h" />
+    <ClInclude Include="angle.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="test.h" />
     <ClInclude Include="testGround.h" />

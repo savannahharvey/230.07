@@ -14,6 +14,9 @@
 #include <iostream> 
 #include <cmath>
 
+#include	"acceleration.h"
+#include	"velocity.h"
+
 class TestPosition;
 class Acceleration;
 class Velocity;

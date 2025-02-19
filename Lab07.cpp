@@ -12,10 +12,22 @@
  *****************************************************************/
 
 #include <cassert>      // for ASSERT
+#include <math.h>       // for PI
 #include "uiInteract.h" // for INTERFACE
 #include "uiDraw.h"     // for RANDOM and DRAW*
 #include "ground.h"     // for GROUND
 #include "position.h"   // for POSITION
+#include "bullet.h"     // for BULLET
+#include "angle.h"      // for ANGLE
+
+
+#define initial_speed         827      // m/s
+#define bullet_weight         46.7     // kg
+#define bullet_diameter       154.89   // mm
+#define bullet_radius         bullet_diameter/0.5
+#define bullet_surface_area   M_PI*bullet_radius*bullet_radius
+
+
 using namespace std;
 
 /*************************************************************************
@@ -28,8 +40,7 @@ public:
    Demo(const Position & ptUpperRight) :
       ptUpperRight(ptUpperRight),
       ground(ptUpperRight),
-      time(0.0),
-      angle(0.0)
+      a()
    {
       // Set the horizontal position of the howitzer. This should be random.
       // See uiDraw.h which has random() defined.
@@ -38,11 +49,31 @@ public:
       // Generate the ground and set the vertical position of the howitzer.
       ground.reset(ptHowitzer);
 
+      //set initial 
+      angle.setDegrees(75.0);
+      bullet.setStartPos(ptHowitzer);
+      bullet.setDegrees(angle.getDegrees());
+      bullet.setVelocity(angle, initial_speed);
+      t = 1;
+      
+
       // This is to make the bullet travel across the screen. Notice how there are 
       // 20 pixels, each with a different age. This gives the appearance
       // of a trail that fades off in the distance.
+
+   /*
+   Inertia: Loop through 20 time units with zero acceleration, zero drag, 
+   and zero gravity.Your angle should be 75° where 0° is straight up.We will
+   be computing the horizontal and vertical velocity after each time unit.Thus, 
+   after initially using the angle of the gun to set the initial velocity, we 
+   will not be using that value anymore.The initial speed(s) is 827 m / s.That 
+   initial velocity(dx, dy) is computed using the vertical and horizontal component 
+   of speed equation.After 20 time units(each unit is 1 seconds), your position :
+   */
       for (int i = 0; i < 20; i++)
       {
+         // interia
+         bullet.travel(a, t);
          projectilePath[i].setPixelsX((double)i * 2.0);
          projectilePath[i].setPixelsY(ptUpperRight.getPixelsY() / 1.5);
       }
@@ -52,8 +83,11 @@ public:
    Position  projectilePath[20];  // path of the projectile, described in position.h
    Position  ptHowitzer;          // location of the howitzer
    Position  ptUpperRight;        // size of the screen
-   double angle;                  // angle of the howitzer, in radians 
+   Angle angle;                   // angle of the howitzer, in radians 
    double time;                   // amount of time since the last firing, in seconds
+   Bullet bullet;                 // information of the projectile fired
+   Acceleration a;                // information of the acceleration
+   double t;
 };
 
 /*************************************
@@ -75,15 +109,15 @@ void callBack(const Interface* pUI, void* p)
 
    // move a large amount
    if (pUI->isRight())
-      pDemo->angle += 0.05;
+      pDemo->angle.add(0.05);
    if (pUI->isLeft())
-      pDemo->angle -= 0.05;
+      pDemo->angle.add(- 0.05);
 
    // move by a little
    if (pUI->isUp())
-      pDemo->angle += (pDemo->angle >= 0 ? -0.003 : 0.003);
+      pDemo->angle.add(pDemo->angle.getRadians() >= 0 ? -0.003 : 0.003);
    if (pUI->isDown())
-      pDemo->angle += (pDemo->angle >= 0 ? 0.003 : -0.003);
+      pDemo->angle.add(pDemo->angle.getRadians() >= 0 ? 0.003 : -0.003);
 
    // fire that gun
    if (pUI->isSpace())
@@ -117,7 +151,7 @@ void callBack(const Interface* pUI, void* p)
    pDemo->ground.draw(gout);
 
    // draw the howitzer
-   gout.drawHowitzer(pDemo->ptHowitzer, pDemo->angle, pDemo->time);
+   gout.drawHowitzer(pDemo->ptHowitzer, pDemo->angle.getRadians(), pDemo->time);
 
    // draw the projectile
    for (int i = 0; i < 20; i++)

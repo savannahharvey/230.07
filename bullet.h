@@ -12,7 +12,7 @@
 #include "angle.h"
 #include	"acceleration.h"
 #include	"velocity.h"
-
+#include "position.h"
 
 class angle;
 class Acceleration;
@@ -23,19 +23,56 @@ class Bullet
 public:
 	Bullet()
 	{
-		time = 1;
-		drag = 0;
+		time = 1.0;
+		drag = 0.0;
 		gravity = 0;
 		angle.setDegrees(15.0);
 	};
 
-private:
-	float time;
-	Acceleration a;
-	float drag;
-	float gravity;
-	Angle angle;
-	float inertia;
-	Velocity v;
+	Bullet(Position pos)
+	{
+		time = 1.0;
+		drag = 0.0;
+		gravity = 0;
+		angle.setDegrees(15.0);
+	};	
+	
 
+	//getters
+	double getDegrees()			const { return angle.getDegrees();	}	
+	double getRadians()			const	{ return angle.getRadians();	}
+	double getdrag()				const { return drag;						}
+	double getDX()					const { return v.getDX();				}
+	double getDY()					const { return v.getDY();				}
+	double getDDX()				const { return a.getDDX();				}
+	double getDDY()				const { return a.getDDY();				}
+	double getXPosition()		const { return pos.getMetersX(); }
+	double getYPosition()		const { return pos.getMetersY(); }
+
+
+	//setter
+	void setDegrees(double degrees)		{angle.setDegrees(degrees);	}
+	void setRadians(double radians)		{angle.setRadians(radians);	}
+	void setDX(double dx)					{v.setDX(dx);						}
+	void setDY(double dy)					{v.setDY(dy);						}
+	void setDrag(double c, double p, double v, double a);
+	void setVelocity(const Angle& angle, double magnitude)
+	{
+		v.set(angle, magnitude);
+	}
+	void setDDX(double ddx)					{ a.setDDX(ddx);					}
+	void setDDY(double ddy)					{ a.setDDY(ddy);					}
+	void setStartPos(Position& pos);
+	void travel(Acceleration& acceleration, double t);
+
+
+private:
+	double time;
+	Acceleration a;
+	double drag;
+	double gravity;
+	Angle angle;
+	double inertia;
+	Velocity v;
+	Position  pos;
 };

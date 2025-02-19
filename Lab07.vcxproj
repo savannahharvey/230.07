@@ -144,6 +144,7 @@
     <ClCompile Include="Lab07.cpp" />
     <ClCompile Include="position.cpp" />
     <ClCompile Include="acceleration.cpp" />
+    <ClCompile Include="bullet.cpp" />
     <ClCompile Include="velocity.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="uiDraw.cpp" />
@@ -153,7 +154,7 @@
     <ClInclude Include="ground.h" />
     <ClInclude Include="acceleration.h" />
     <ClInclude Include="velocity.h" />
-    <ClInclude Include="inertia.h" />
+    <ClInclude Include="bullet.h" />
     <ClInclude Include="angle.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="test.h" />

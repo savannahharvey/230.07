@@ -42,6 +42,9 @@
     <ClCompile Include="velocity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bullet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ground.h">
@@ -65,7 +68,7 @@
     <ClInclude Include="testGround.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inertia.h">
+    <ClInclude Include="bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="angle.h">

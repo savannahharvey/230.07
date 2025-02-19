@@ -20,6 +20,8 @@
 #include "bullet.h"     // for BULLET
 #include "angle.h"      // for ANGLE
 
+#include <vector>
+
 
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
@@ -27,7 +29,6 @@
 #define gravity               -9.8     // m/s^2
 #define bullet_radius         bullet_diameter/0.5
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
-
 
 using namespace std;
 
@@ -38,9 +39,9 @@ using namespace std;
 class Demo
 {
 public:
-   Demo(const Position & ptUpperRight) :
+   Demo(const Position& ptUpperRight) :
       ptUpperRight(ptUpperRight),
-      ground(ptUpperRight)
+      ground(ptUpperRight),
    {
       // Set the horizontal position of the howitzer. This should be random.
       // See uiDraw.h which has random() defined.
@@ -64,6 +65,8 @@ public:
    initial velocity(dx, dy) is computed using the vertical and horizontal component 
    of speed equation.After 20 time units(each unit is 1 seconds), your position :
    */
+
+
 
       //set initial 
       double degrees;
@@ -113,6 +116,12 @@ public:
    double t;
    double hangTime;               // time bullet is in air
 };
+
+double getGravity(double altitude)
+{
+   vector <pair<int, double>> gravityTable = { (0, 9.807), (1000, 9.804) };
+}
+
 
 /*************************************
  * All the interesting work happens here, when

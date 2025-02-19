@@ -35,6 +35,6 @@ double Angle::normalize(double radians) const
    }
 
    assert(0.0 <= radians && radians <= (M_PI * 2.0));
-   return radians;
+   return  radians;
 }
 

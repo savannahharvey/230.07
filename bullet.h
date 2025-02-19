@@ -48,6 +48,7 @@ public:
 	double getDDY()				const { return a.getDDY();				}
 	double getXPosition()		const { return pos.getMetersX(); }
 	double getYPosition()		const { return pos.getMetersY(); }
+	Acceleration getAccleration() const { return a; }
 
 
 	//setter
@@ -62,6 +63,7 @@ public:
 	}
 	void setDDX(double ddx)					{ a.setDDX(ddx);					}
 	void setDDY(double ddy)					{ a.setDDY(ddy);					}
+	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y); }
 	void setStartPos(Position& pos);
 	void travel(Acceleration& acceleration, double t);
 

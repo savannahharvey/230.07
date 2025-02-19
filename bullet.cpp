@@ -24,13 +24,14 @@ void Bullet::setDrag(double c, double p, double v, double a)
 }; 
 
 /******************************************
- * BULLET  interia
- * sets the interia force in newtons (N)
+ * BULLET  travels
+ * changes the bullet's position according to 
  * d = ½ c ρ v^2 a
- *    c = drag coefficient
- *    ρ = density of the fluid/gas
- *    v = velocity of the projectile
- *    a = surface area
+ *    s = distance in meters (m)
+ *    s0 = initial distance (m)
+ *    v = velocity (m/s)
+ *    t = time (s)
+ *    a = acceleration (m/s2)
  *****************************************/
 void Bullet::travel(Acceleration& a, double t)
 {

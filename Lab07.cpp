@@ -24,6 +24,7 @@
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
 #define bullet_diameter       154.89   // mm
+#define gravity               -9.8     // m/s^2
 #define bullet_radius         bullet_diameter/0.5
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
 
@@ -39,8 +40,7 @@ class Demo
 public:
    Demo(const Position & ptUpperRight) :
       ptUpperRight(ptUpperRight),
-      ground(ptUpperRight),
-      a()
+      ground(ptUpperRight)
    {
       // Set the horizontal position of the howitzer. This should be random.
       // See uiDraw.h which has random() defined.
@@ -49,12 +49,6 @@ public:
       // Generate the ground and set the vertical position of the howitzer.
       ground.reset(ptHowitzer);
 
-      //set initial 
-      angle.setDegrees(75.0);
-      bullet.setStartPos(ptHowitzer);
-      bullet.setDegrees(angle.getDegrees());
-      bullet.setVelocity(angle, initial_speed);
-      t = 1;
       
 
       // This is to make the bullet travel across the screen. Notice how there are 
@@ -70,13 +64,43 @@ public:
    initial velocity(dx, dy) is computed using the vertical and horizontal component 
    of speed equation.After 20 time units(each unit is 1 seconds), your position :
    */
+
+      //set initial 
+      double degrees;
+      Acceleration a;
+      cout << "What is the angle of the howitzer where 0 is up?  ";
+      cin  >> degrees;
+      
+      //bullet.setStartPos(ptHowitzer);
+      bullet.setPos(0,0);
+
+      angle.setDegrees(degrees);
+      bullet.setDegrees(angle.getDegrees());
+      bullet.setVelocity(angle, initial_speed);
+      bullet.setDDY(gravity);
+      
+      a = bullet.getAccleration();
+      t = 0.01;
+      
+
+      hangTime = 0.0;
+      do {
+         bullet.travel(a, t);
+         hangTime += 0.01;
+      }
+      while (bullet.getYPosition() > 0.0);
+      
+        
       for (int i = 0; i < 20; i++)
       {
          // interia
-         bullet.travel(a, t);
          projectilePath[i].setPixelsX((double)i * 2.0);
          projectilePath[i].setPixelsY(ptUpperRight.getPixelsY() / 1.5);
       }
+      cout << "Distance:      " << bullet.getXPosition() << "m   "
+           << "Altitude:      " << bullet.getYPosition() << "m   "
+           << "Hang Time:     " << hangTime              << "s"
+           << endl;
    }
 
    Ground ground;                 // the ground, described in ground.h
@@ -86,8 +110,8 @@ public:
    Angle angle;                   // angle of the howitzer, in radians 
    double time;                   // amount of time since the last firing, in seconds
    Bullet bullet;                 // information of the projectile fired
-   Acceleration a;                // information of the acceleration
    double t;
+   double hangTime;               // time bullet is in air
 };
 
 /*************************************

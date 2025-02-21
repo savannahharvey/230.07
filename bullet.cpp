@@ -25,26 +25,17 @@ void Bullet::setDrag(double p, double v, double area, double weight)
    double drag_force = 0.5 * 0.3 * p * v * v * area;
    double drag_accel = drag_force / weight;
 
-   double currentAngle = atan2(getDX(), getDY())+M_PI;
+   double currentAngle = atan2(getDX(), getDY());
    angle.setRadians(currentAngle);
    cout << "current angle: " << currentAngle << endl;
 
-   dragDDX = -1 * drag_accel * sin(currentAngle);
-   //a.addDDX(dragDDX);
+   double dragDDX = -1 * drag_accel * sin(currentAngle);
+   a.addDDX(dragDDX);
 
-   dragDDY = -1 * drag_accel * cos(currentAngle); // Vertical drag
-   //a.addDDY(dragDDY);
+   double dragDDY = -1 * drag_accel * cos(currentAngle);
+   a.addDDY(dragDDY);
 }
 
-double Bullet::getDragDDX()
-{
-   return dragDDX;
-}
-
-double Bullet::getDragDDY()
-{
-   return dragDDY;
-}
 
 /******************************************
  * BULLET  travels
@@ -56,7 +47,7 @@ double Bullet::getDragDDY()
  *    t = time (s)
  *    a = acceleration (m/s2)
  *****************************************/
-void Bullet::travel(Acceleration& a, double t)
+void Bullet::travel(double t)
 {
    // update position
    pos.addMetersX(v.getDX() * t + 0.5 * a.getDDX() * t * t);

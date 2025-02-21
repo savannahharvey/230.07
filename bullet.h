@@ -38,8 +38,6 @@ public:
 	double getDegrees()			const { return angle.getDegrees();	}	
 	double getRadians()			const	{ return angle.getRadians();	}
 	double getDX()					const { return v.getDX();				}
-	double getDragDDX();
-	double getDragDDY();
 	double getDY()					const { return v.getDY();				}
 	double getDDX()				const { return a.getDDX();				}
 	double getDDY()				const { return a.getDDY();				}
@@ -62,18 +60,15 @@ public:
 	void setDDY(double ddy)					{ a.setDDY(ddy);					}
 	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y); }
 	void setStartPos(Position& pos);
-	void travel(Acceleration& acceleration, double t);
+	void travel(double t);
 	//void addDrag() {a.add(a); }
 
 
 private:
 	double time;
 	Acceleration a;
-	//Acceleration drag;
 	Angle angle;
 	double inertia;
 	Velocity v;
 	Position  pos;
-	double dragDDX;
-	double dragDDY;
 };

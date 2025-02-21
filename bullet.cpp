@@ -21,10 +21,10 @@
  *    a = surface area
  *****************************************/
 
-void Bullet::setDrag(double p, double area, double weight)
+void Bullet::setDrag(double c, double p, double area, double weight)
 {
    double v = getSpeed();
-   double drag_force = 0.5 * 0.3 * p * v * v * area;
+   double drag_force = 0.5 * c * p * v * v * area;
    double drag_accel = drag_force / weight;
 
    double currentAngle = atan2(getDX(), getDY());
@@ -80,7 +80,7 @@ void Bullet::setStartPos(Position& ptHowitzer)
  *****************************************/
 
  //double r0, double r1, double d0, double d1,
-double Bullet::interpolation(const double altitude, vector <pair<int, double>> table)
+double Bullet::interpolation(const double altitude, vector <pair<double, double>> table)
 {
    double r0 = 4.0;
    double r1;

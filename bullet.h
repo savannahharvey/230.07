@@ -44,7 +44,7 @@ public:
 	double getXPosition()		const { return pos.getMetersX(); }
 	double getYPosition()		const { return pos.getMetersY(); }
 	Acceleration getAccleration() const { return a; }
-	double interpolation(const double altitude, vector <pair<int, double>> table);
+	double interpolation(const double altitude, vector <pair<double, double>> table);
 	double getSpeed()				const { return v.getSpeed(); }
 	
 	//setter
@@ -60,7 +60,7 @@ public:
 	{
 		v.set(angle, magnitude);
 	}
-	void setDrag(double p, double area, double weight);
+	void setDrag(double c, double p, double area, double weight);
 	void setDDX(double ddx)					{ a.setDDX(ddx);					}
 	void setDDY(double ddy)					{ a.setDDY(ddy);					}
 	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y); }

@@ -27,8 +27,8 @@
 
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
-#define bullet_diameter       0.15489   // m
-#define bullet_radius         bullet_diameter*0.5
+#define bullet_diameter       154.89   // mm
+#define bullet_radius         bullet_diameter * 0.5 * 0.001
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
 #define air_den               0.6
 #define drag_co               0.3
@@ -111,30 +111,30 @@ public:
       double DDX;
       double DDY;
       do {
+         a.setDDX(0.0);
+         a.setDDY(0.0);
          altitude = bullet.getYPosition();
          gravity = bullet.interpolation(altitude, gravityTable);
          bullet.setDDY(-gravity);
+         //bullet.setDDY(-gravity + bullet.getDDY());
+         //bullet.setDDX(bullet.getDDX());
          v = bullet.getSpeed();
+         bullet.setDrag( air_den, v, bullet_surface_area, bullet_weight);
+         cout << "DDX of Drag is " << bullet.getDragDDX() << endl;
+         cout << "DDY of Drag is " << bullet.getDragDDY() << endl;
          
-         dragForce = 0.5 * drag_co * air_den * v * v * bullet_surface_area;
-         dragAcceleration = dragForce/bullet_weight;
-
-         dragAngle = atan2(bullet.getDX(), bullet.getDY())+ M_PI;
-         cout << dragAngle <<endl;
-
-         dragDDX = -dragAcceleration * sin(dragAngle);
-         dragDDY = -dragAcceleration * cos(dragAngle);
-         DDX = bullet.getDDX();
-         DDY = bullet.getDDY();
-
-         bullet.setDDX(DDX + dragDDX);
-         bullet.setDDY(DDY + dragDDY);
-
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
+         bullet.addDrag();
+         cout << "after Drag" << endl;
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
          a = bullet.getAccleration();
 
          bullet.travel(a, t);
-
-
+         cout << "after travel" << endl;
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
          hangTime += 0.01;
 
       }

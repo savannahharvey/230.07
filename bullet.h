@@ -46,12 +46,16 @@ public:
 	Acceleration getAccleration() const { return a; }
 	double interpolation(const double altitude, vector <pair<int, double>> table);
 	double getSpeed()				const { return v.getSpeed(); }
+	
 	//setter
 	void setDegrees(double degrees)		{angle.setDegrees(degrees);	}
 	void setRadians(double radians)		{angle.setRadians(radians);	}
 	void setDX(double dx)					{v.setDX(dx);						}
 	void setDY(double dy)					{v.setDY(dy);						}
-	void setDrag( double p, double v, double a, double weight);
+	void addVelocity(const Acceleration& acceleration, double time)
+	{
+		v.add(acceleration, time);
+	}
 	void setVelocity(const Angle& angle, double magnitude)
 	{
 		v.set(angle, magnitude);

@@ -9,6 +9,7 @@
 
  #include "bullet.h"
  #include <cmath>
+ #include <math.h>
 
  /******************************************
  * BULLET  drag

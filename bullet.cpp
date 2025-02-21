@@ -9,6 +9,7 @@
 
  #include "bullet.h"
  #include <cmath>
+ #include <math.h>
 
  /******************************************
  * BULLET  drag
@@ -19,19 +20,31 @@
  *    v = velocity of the projectile
  *    a = surface area
  *****************************************/
-void Bullet::setDrag( double p, double v, double area, double weight)
+void Bullet::setDrag(double p, double area, double weight)
 {
-   double drag_force;
-   drag_force = 0.5 * 0.3 * p * v * v * area;
+   double dx = getDX();
+   double dy = getDY();
+   double v;
+   v = getSpeed();
+   double c = 0.3;
+   double angle_drag = atan2(dy, dx);
+   double drag_force = 0.5 * c * p * v * v * area;
+   double drag_accel = drag_force / weight;
 
-   cout << "drag is " << drag_force << endl;
-   double d = drag_force / weight;
-   drag.set(atan2(getDX(), getDY()), d);
+   double dragDDX = -drag_accel * cos(angle_drag);
+   double dragDDY = -drag_accel * sin(angle_drag);
 
-   double currentAngle = atan2(getDX(), getDY());
-   double dragDDX = d * sin(currentAngle);
-   double dragDDY = d * cos(currentAngle);
+   drag.setDDX(dragDDX);
+   drag.setDDY(dragDDY);
+
+
 }; 
+
+void Bullet::addDrag()
+{
+   a.setDDX(a.getDDX() + drag.getDDX());
+   a.setDDY(a.getDDY() + drag.getDDY());
+}
 
 /******************************************
  * BULLET  travels

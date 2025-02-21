@@ -13,6 +13,7 @@
 
 #include <cassert>      // for ASSERT
 #include <math.h>       // for PI
+#include <cmath>
 #include "uiInteract.h" // for INTERFACE
 #include "uiDraw.h"     // for RANDOM and DRAW*
 #include "ground.h"     // for GROUND
@@ -26,8 +27,8 @@
 
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
-#define bullet_diameter       154.89   // mm
-#define bullet_radius         bullet_diameter*0.5*0.001
+#define bullet_diameter       0.15489   // m
+#define bullet_radius         bullet_diameter*0.5
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
 #define air_den               0.6
 #define drag_co               0.3
@@ -57,15 +58,6 @@ public:
       // This is to make the bullet travel across the screen. Notice how there are 
       // 20 pixels, each with a different age. This gives the appearance
       // of a trail that fades off in the distance.
-      
-      //initialize Gravity Table
-      //gravityTable = {
-      //{0, 9.807},     {1000, 9.804}, {2000, 9.801}, {3000, 9.797},
-      //{4000, 9.794},  {5000, 9.791}, {6000, 9.788}, {7000, 9.785},  
-      //{8000, 9.782},  {9000, 9.779}, {10000, 9.776},{15000, 9.761},
-      //{20000, 9.745}, {25000, 9.730},{30000, 9.715},{40000, 9.684}, 
-      //{50000, 9.654}, {60000, 9.624}, {70000, 9.594}, {80000, 9.564}
-      //};
 
 
 
@@ -110,30 +102,41 @@ public:
             {80000,	9.564} };
       hangTime = 0.0;
       double v;
-      double d;
+      double dragForce;
       double dAccel;
+      double dragAcceleration;
+      double dragAngle;
+      double dragDDX;
+      double dragDDY;
+      double DDX;
+      double DDY;
       do {
          altitude = bullet.getYPosition();
          gravity = bullet.interpolation(altitude, gravityTable);
          bullet.setDDY(-gravity);
          v = bullet.getSpeed();
-         bullet.setDrag( air_den, v, bullet_surface_area, bullet_weight);
-         cout << "DDX of Drag is " << bullet.getDragDDX() << endl;
-         cout << "DDY of Drag is " << bullet.getDragDDY() << endl;
          
-         cout << "DDX of bullet is " << bullet.getDDX() << endl;
-         cout << "DDY of bullet is " << bullet.getDDY() << endl;
-         bullet.addDrag();
-         cout << "after Drag" << endl;
-         cout << "DDX of bullet is " << bullet.getDDX() << endl;
-         cout << "DDY of bullet is " << bullet.getDDY() << endl;
+         dragForce = 0.5 * drag_co * air_den * v * v * bullet_surface_area;
+         dragAcceleration = dragForce/bullet_weight;
+
+         dragAngle = atan2(bullet.getDX(), bullet.getDY())+ M_PI;
+         cout << dragAngle <<endl;
+
+         dragDDX = -dragAcceleration * sin(dragAngle);
+         dragDDY = -dragAcceleration * cos(dragAngle);
+         DDX = bullet.getDDX();
+         DDY = bullet.getDDY();
+
+         bullet.setDDX(DDX + dragDDX);
+         bullet.setDDY(DDY + dragDDY);
+
          a = bullet.getAccleration();
 
          bullet.travel(a, t);
-         cout << "after travel" << endl;
-         cout << "DDX of bullet is " << bullet.getDDX() << endl;
-         cout << "DDY of bullet is " << bullet.getDDY() << endl;
+
+
          hangTime += 0.01;
+
       }
       while (bullet.getYPosition() > 0.0);
       

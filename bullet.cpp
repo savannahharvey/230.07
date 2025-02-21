@@ -19,19 +19,32 @@
  *    v = velocity of the projectile
  *    a = surface area
  *****************************************/
-void Bullet::setDrag( double p, double v, double area, double weight)
+
+void Bullet::setDrag(double p, double v, double area, double weight)
 {
-   double drag_force;
-   drag_force = 0.5 * 0.3 * p * v * v * area;
+   double drag_force = 0.5 * 0.3 * p * v * v * area;
+   double drag_accel = drag_force / weight;
 
-   cout << "drag is " << drag_force << endl;
-   double d = drag_force / weight;
-   drag.set(atan2(getDX(), getDY()), d);
+   double currentAngle = atan2(getDX(), getDY())+M_PI;
+   angle.setRadians(currentAngle);
+   cout << "current angle: " << currentAngle << endl;
 
-   double currentAngle = atan2(getDX(), getDY());
-   double dragDDX = d * sin(currentAngle);
-   double dragDDY = d * cos(currentAngle);
-}; 
+   dragDDX = -1 * drag_accel * sin(currentAngle);
+   //a.addDDX(dragDDX);
+
+   dragDDY = -1 * drag_accel * cos(currentAngle); // Vertical drag
+   //a.addDDY(dragDDY);
+}
+
+double Bullet::getDragDDX()
+{
+   return dragDDX;
+}
+
+double Bullet::getDragDDY()
+{
+   return dragDDY;
+}
 
 /******************************************
  * BULLET  travels

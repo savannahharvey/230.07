@@ -27,9 +27,10 @@
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
 #define bullet_diameter       154.89   // mm
-#define bullet_radius         bullet_diameter/0.5
+#define bullet_radius         bullet_diameter*0.5*0.001
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
-#define gravity
+#define air_den               0.6
+#define drag_co               0.3
 
 using namespace std;
 
@@ -58,19 +59,20 @@ public:
       // of a trail that fades off in the distance.
       
       //initialize Gravity Table
-      gravityTable = {
-      {0, 9.807},     {1000, 9.804}, {2000, 9.801}, {3000, 9.797},
-      {4000, 9.794},  {5000, 9.791}, {6000, 9.788}, {7000, 9.785},  
-      {8000, 9.782},  {9000, 9.779}, {10000, 9.776},{15000, 9.761},
-      {20000, 9.745}, {25000, 9.730},{30000, 9.715},{40000, 9.684}, 
-      {50000, 9.654}, {60000, 9.624}, {70000, 9.594}, {80000, 9.564}
-      };
+      //gravityTable = {
+      //{0, 9.807},     {1000, 9.804}, {2000, 9.801}, {3000, 9.797},
+      //{4000, 9.794},  {5000, 9.791}, {6000, 9.788}, {7000, 9.785},  
+      //{8000, 9.782},  {9000, 9.779}, {10000, 9.776},{15000, 9.761},
+      //{20000, 9.745}, {25000, 9.730},{30000, 9.715},{40000, 9.684}, 
+      //{50000, 9.654}, {60000, 9.624}, {70000, 9.594}, {80000, 9.564}
+      //};
 
 
 
       //set initial 
       double degrees;
       Acceleration a;
+      double gravity;
       cout << "What is the angle of the howitzer where 0 is up?  ";
       cin  >> degrees;
       
@@ -80,15 +82,57 @@ public:
       angle.setDegrees(degrees);
       bullet.setDegrees(angle.getDegrees());
       bullet.setVelocity(angle, initial_speed);
+      gravity = 9.807;
       bullet.setDDY(gravity);
       
-      a = bullet.getAccleration();
       t = 0.01;
-      
-
+      double altitude;
+      vector <pair<int, double>> gravityTable = {
+            {0   ,   9.807},
+            {1000,	9.804},
+            {2000,	9.801},
+            {3000,	9.797},
+            {4000,	9.794},
+            {5000,	9.791},
+            {6000,	9.788},
+            {7000,	9.785},
+            {8000,	9.782},
+            {9000,	9.779},
+            {10000,	9.776},
+            {15000,	9.761},
+            {20000,	9.745},
+            {25000,	9.730},
+            {30000,	9.715},
+            {40000,	9.684},
+            {50000,	9.654},
+            {60000,	9.624},
+            {70000,	9.594},
+            {80000,	9.564} };
       hangTime = 0.0;
+      double v;
+      double d;
+      double dAccel;
       do {
+         altitude = bullet.getYPosition();
+         gravity = bullet.interpolation(altitude, gravityTable);
+         bullet.setDDY(-gravity);
+         v = bullet.getSpeed();
+         bullet.setDrag( air_den, v, bullet_surface_area, bullet_weight);
+         cout << "DDX of Drag is " << bullet.getDragDDX() << endl;
+         cout << "DDY of Drag is " << bullet.getDragDDY() << endl;
+         
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
+         bullet.addDrag();
+         cout << "after Drag" << endl;
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
+         a = bullet.getAccleration();
+
          bullet.travel(a, t);
+         cout << "after travel" << endl;
+         cout << "DDX of bullet is " << bullet.getDDX() << endl;
+         cout << "DDY of bullet is " << bullet.getDDY() << endl;
          hangTime += 0.01;
       }
       while (bullet.getYPosition() > 0.0);
@@ -117,78 +161,14 @@ public:
    Bullet bullet;                 // information of the projectile fired
    double t;
    double hangTime;               // time bullet is in air
-   vector <pair<int, double>> gravityTable;
 };
 
-/******************************************
- * Demo  linearInterpolation
- * math Magic
- *    finds a value for either gravity or air denesity
- *    given any altitude
- * (r - r0)/(d - d0) = (r1 - r0) / (d1 - d0)
- *
- *    (r,d) (r0,d0) (r1,d1)
- *
- *    r  = The value we are calculating
- *    r0 = The value given the altitude below
- *    r1 = The value given the altitude above
- *
- *    d  = The altitude for the value we want to calculate
- *       **For this value we will be using bulletgetYPosition()
- *    d0 = The altitude for the value below
- *    d1 = The altitude for the value above
- *****************************************/
-
- //double r0, double r1, double d0, double d1,
-double linearInterpolation( const  Bullet &bullet, vector <double> table)
-{
-   double r0 = 4.0;
-   double r1;
-   double d0;
-   double d1;
-   int i;
-
-   if (bullet.getYPosition() < 1000)
-   {
-      i = 0;
-      r0 = table[i].first;
-      r1 = table[i+1].first;
-      d0 = table[1].second;
-      d1 = table [i+1].second;
-   }
-   else if (bullet.getYPosition() < 10000)
-   {
-      i = floor(bullet.getYPosition())/1000;
-      r0 = table[i].first;
-      r1 = table[i + 1].first;
-      d0 = table[1].second;
-      d1 = table[i + 1].second;
-   }
-   else if (bullet.getYPosition() < 30000)
-   {
-      i = (floor(bullet.getYPosition()) / 15000) + 10;
-      r0 = table[i].first;
-      r1 = table[i + 1].first;
-      d0 = table[1].second;
-      d1 = table[i + 1].second;
-   }
-   else if (bullet.getYPosition() < 30000)
-   {
-      i = (floor(bullet.getYPosition()) / 10000) + 14;
-      r0 = table[i].first;
-      r1 = table[i + 1].first;
-      d0 = table[1].second;
-      d1 = table[i + 1].second;
-   }
-
-   return ((r1 - r0) / (d1 - d0)) * (bullet.getYPosition() - d0) + r0;
-}
 
 
 
 vector <pair<int, double>> getGravityTable()
 {
-   vector<tuple<int, double>> gravityTable = {
+   vector <pair<int, double>> gravityTable = {
       {0   ,   9.807},
       {1000,	9.804},
       {2000,	9.801},
@@ -210,17 +190,7 @@ vector <pair<int, double>> getGravityTable()
       {70000,	9.594},
       {80000,	9.564} };
 
-   double newGravity;
-   int x0 = 1000;
-   int x1 = 2000;
-   double x = altitude;
-   double y0 = 9.804;
-   double y1 = 9.801;
-
-   newGravity = (((y1 - y0) / (x1 - x0))*(x - x0) + y0);
-   cout << newGravity;
-
-   return newGravity;
+   return gravityTable;
 
 }
 

@@ -62,7 +62,6 @@ public:
 
       //set initial 
       double degrees;
-      double gravity;
       cout << "What is the angle of the howitzer where 0 is up?  ";
       cin  >> degrees;
       
@@ -72,8 +71,6 @@ public:
       angle.setDegrees(degrees);
       bullet.setDegrees(angle.getDegrees());
       bullet.setVelocity(angle, initial_speed);
-      gravity = 9.807;
-      bullet.setDDY(gravity);
       
       t = 0.01;
       double altitude;
@@ -99,21 +96,17 @@ public:
             {70000,	9.594},
             {80000,	9.564} };
       hangTime = 0.0;
-      double v;
-      double d;
-      double dAccel;
+      Acceleration gravity;
       do {
          altitude = bullet.getYPosition();
-         gravity = bullet.interpolation(altitude, gravityTable);
-         bullet.setDDY(-gravity);
-         
-         v = bullet.getSpeed();
-         //bullet.setDrag( air_den, v, bullet_surface_area, bullet_weight);
+         currentGravity = bullet.interpolation(altitude, gravityTable);
+         gravity.setDDY(-currentGravity);
+         //bullet.setDDY(-gravity);
+         bullet.setDrag( air_den, bullet_surface_area, bullet_weight);
+         bullet.addAcceleration(gravity);
 
          bullet.travel(t);
 
-         cout << bullet.getDX();
-         cout << bullet.getDY() << endl;
          
          hangTime += 0.01;
       }
@@ -143,6 +136,7 @@ public:
    Bullet bullet;                 // information of the projectile fired
    double t;
    double hangTime;               // time bullet is in air
+   double currentGravity;
 };
 
 

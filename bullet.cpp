@@ -21,20 +21,18 @@
  *    a = surface area
  *****************************************/
 
-void Bullet::setDrag(double p, double v, double area, double weight)
+void Bullet::setDrag(double p, double area, double weight)
 {
+   double v = getSpeed();
    double drag_force = 0.5 * 0.3 * p * v * v * area;
    double drag_accel = drag_force / weight;
 
    double currentAngle = atan2(getDX(), getDY());
    angle.setRadians(currentAngle);
-   cout << "current angle: " << currentAngle << endl;
+   angle.reverse();
+   a.set(angle, drag_accel);
+   return;
 
-   double dragDDX = -1 * drag_accel * sin(currentAngle);
-   a.addDDX(dragDDX);
-
-   double dragDDY = -1 * drag_accel * cos(currentAngle);
-   a.addDDY(dragDDY);
 }
 
 
@@ -108,6 +106,7 @@ double Bullet::interpolation(const double altitude, vector <pair<int, double>> t
       return 9.564;
    }
    }
+
 
 
 

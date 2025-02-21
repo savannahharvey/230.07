@@ -60,12 +60,17 @@ public:
 	{
 		v.set(angle, magnitude);
 	}
-	void setDrag(double p, double v, double area, double weight);
+	void setDrag(double p, double area, double weight);
 	void setDDX(double ddx)					{ a.setDDX(ddx);					}
 	void setDDY(double ddy)					{ a.setDDY(ddy);					}
 	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y); }
 	void setStartPos(Position& pos);
 	void travel(double t);
+	void addAcceleration(const Acceleration& accel)
+	{
+		a.setDDX(accel.getDDX() + a.getDDX());
+		a.setDDY(accel.getDDY() + a.getDDY());
+	}
 	//void addDrag() {a.add(a); }
 
 

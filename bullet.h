@@ -68,6 +68,7 @@ public:
 	void travel(Acceleration& acceleration, double t);
 
 
+
 private:
 	double time;
 	Acceleration a;

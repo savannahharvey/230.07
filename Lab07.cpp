@@ -26,9 +26,9 @@
 #define initial_speed         827      // m/s
 #define bullet_weight         46.7     // kg
 #define bullet_diameter       154.89   // mm
-#define gravity               -9.8     // m/s^2
 #define bullet_radius         bullet_diameter/0.5
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
+#define gravity
 
 using namespace std;
 
@@ -41,7 +41,7 @@ class Demo
 public:
    Demo(const Position& ptUpperRight) :
       ptUpperRight(ptUpperRight),
-      ground(ptUpperRight),
+      ground(ptUpperRight), bullet()
    {
       // Set the horizontal position of the howitzer. This should be random.
       // See uiDraw.h which has random() defined.
@@ -55,16 +55,15 @@ public:
       // This is to make the bullet travel across the screen. Notice how there are 
       // 20 pixels, each with a different age. This gives the appearance
       // of a trail that fades off in the distance.
-
-   /*
-   Inertia: Loop through 20 time units with zero acceleration, zero drag, 
-   and zero gravity.Your angle should be 75° where 0° is straight up.We will
-   be computing the horizontal and vertical velocity after each time unit.Thus, 
-   after initially using the angle of the gun to set the initial velocity, we 
-   will not be using that value anymore.The initial speed(s) is 827 m / s.That 
-   initial velocity(dx, dy) is computed using the vertical and horizontal component 
-   of speed equation.After 20 time units(each unit is 1 seconds), your position :
-   */
+      
+      //initialize Gravity Table
+      gravityTable = {
+      {0, 9.807},     {1000, 9.804}, {2000, 9.801}, {3000, 9.797},
+      {4000, 9.794},  {5000, 9.791}, {6000, 9.788}, {7000, 9.785},  
+      {8000, 9.782},  {9000, 9.779}, {10000, 9.776},{15000, 9.761},
+      {20000, 9.745}, {25000, 9.730},{30000, 9.715},{40000, 9.684}, 
+      {50000, 9.654}, {60000, 9.624}, {70000, 9.594}, {80000, 9.564}
+      };
 
 
 
@@ -106,6 +105,8 @@ public:
            << endl;
    }
 
+
+
    Ground ground;                 // the ground, described in ground.h
    Position  projectilePath[20];  // path of the projectile, described in position.h
    Position  ptHowitzer;          // location of the howitzer
@@ -115,12 +116,84 @@ public:
    Bullet bullet;                 // information of the projectile fired
    double t;
    double hangTime;               // time bullet is in air
+   vector <pair<int, double>> gravityTable;
 };
 
-double getGravity(double altitude)
+/******************************************
+ * Demo  linearInterpolation
+ * math Magic
+ *    finds a value for either gravity or air denesity
+ *    given any altitude
+ * (r - r0)/(d - d0) = (r1 - r0) / (d1 - d0)
+ *
+ *    (r,d) (r0,d0) (r1,d1)
+ *
+ *    r  = The value we are calculating
+ *    r0 = The value given the altitude below
+ *    r1 = The value given the altitude above
+ *
+ *    d  = The altitude for the value we want to calculate
+ *       **For this value we will be using bulletgetYPosition()
+ *    d0 = The altitude for the value below
+ *    d1 = The altitude for the value above
+ *****************************************/
+
+ //double r0, double r1, double d0, double d1,
+double linearInterpolation( const  Bullet &bullet, vector <double> table)
 {
-   vector <pair<int, double>> gravityTable = { (0, 9.807), (1000, 9.804) };
+   double r0 = 4.0;
+   double r1;
+   double d0;
+   double d1;
+   int i;
+
+   if (bullet.getYPosition() < 1000)
+   {
+      i = 0;
+      r0 = table[i].first;
+      r1 = table[i+1].first;
+      d0 = table[1].second;
+      d1 = table [i+1].second;
+   }
+   else if (bullet.getYPosition() < 10000)
+   {
+      i = floor(bullet.getYPosition())/1000;
+      r0 = table[i].first;
+      r1 = table[i + 1].first;
+      d0 = table[1].second;
+      d1 = table[i + 1].second;
+   }
+   else if (bullet.getYPosition() < 30000)
+   {
+      i = (floor(bullet.getYPosition()) / 15000) + 10;
+      r0 = table[i].first;
+      r1 = table[i + 1].first;
+      d0 = table[1].second;
+      d1 = table[i + 1].second;
+   }
+   else if (bullet.getYPosition() < 30000)
+   {
+      i = (floor(bullet.getYPosition()) / 10000) + 14;
+      r0 = table[i].first;
+      r1 = table[i + 1].first;
+      d0 = table[1].second;
+      d1 = table[i + 1].second;
+   }
+
+   return ((r1 - r0) / (d1 - d0)) * (bullet.getYPosition() - d0) + r0;
 }
+
+
+
+vector <pair<int, double>> getGravityTable()
+{
+   vector <pair<int, double>> gravityTable = {
+   (9.807), (9.804), (9.801), (9.797), (9.794), (9.791), (9.788), (9.785),
+   (9.782), (9.779), (9.776), (9.761),(9.745), (9.730), (9.715), (9.684),
+   (9.654), (9.624), (9.594), (9.564)
+   };
+}
+
 
 
 /*************************************

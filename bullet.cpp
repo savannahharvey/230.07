@@ -47,3 +47,9 @@ void Bullet::setStartPos(Position& ptHowitzer)
    pos.setMeters(ptHowitzer.getMetersX(), ptHowitzer.getMetersY());
 }
 
+
+
+
+
+
+

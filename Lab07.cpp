@@ -21,6 +21,7 @@
 #include "angle.h"      // for ANGLE
 
 #include <vector>
+#include <tuple>
 
 
 #define initial_speed         827      // m/s
@@ -187,11 +188,40 @@ double linearInterpolation( const  Bullet &bullet, vector <double> table)
 
 vector <pair<int, double>> getGravityTable()
 {
-   vector <pair<int, double>> gravityTable = {
-   (9.807), (9.804), (9.801), (9.797), (9.794), (9.791), (9.788), (9.785),
-   (9.782), (9.779), (9.776), (9.761),(9.745), (9.730), (9.715), (9.684),
-   (9.654), (9.624), (9.594), (9.564)
-   };
+   vector<tuple<int, double>> gravityTable = {
+      {0   ,   9.807},
+      {1000,	9.804},
+      {2000,	9.801},
+      {3000,	9.797},
+      {4000,	9.794},
+      {5000,	9.791},
+      {6000,	9.788},
+      {7000,	9.785},
+      {8000,	9.782},
+      {9000,	9.779},
+      {10000,	9.776},
+      {15000,	9.761},
+      {20000,	9.745},
+      {25000,	9.730},
+      {30000,	9.715},
+      {40000,	9.684},
+      {50000,	9.654},
+      {60000,	9.624},
+      {70000,	9.594},
+      {80000,	9.564} };
+
+   double newGravity;
+   int x0 = 1000;
+   int x1 = 2000;
+   double x = altitude;
+   double y0 = 9.804;
+   double y1 = 9.801;
+
+   newGravity = (((y1 - y0) / (x1 - x0))*(x - x0) + y0);
+   cout << newGravity;
+
+   return newGravity;
+
 }
 
 

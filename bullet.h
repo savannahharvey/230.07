@@ -44,11 +44,15 @@ public:
 	double getDDY()				const { return a.getDDY();				}
 	double getXPosition()		const { return pos.getMetersX(); }
 	double getYPosition()		const { return pos.getMetersY(); }
+	double getSpeed()				const { return v.getSpeed(); }
 	Position getPosition()     const { return pos; }
 	Acceleration getAccleration() const { return a; }
+	
 	double interpolation(const double altitude, 
-	vector <pair<double, double>> table);
-	double getSpeed()				const { return v.getSpeed(); }
+										vector <pair<double, double>> table);
+	
+	double interpolation(double r, double r1, double r0,
+								double d1, double d0);
 	
 	//setter
 	void setDegrees(double degrees)		{angle.setDegrees(degrees);	}

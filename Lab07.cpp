@@ -202,15 +202,14 @@ public:
             double afterTime = hangTime - 0.01;
             double altitudeNew = bullet.getYPosition();
 
-            hangTime = ((afterTime - beforeTime) / 
-                        (altitudeNew - altitudeOld)) * (0.0 - altitudeOld) 
-                        + beforeTime;
+            hangTime = bullet.interpolation(0.0, afterTime, beforeTime,
+                                            altitudeNew, altitudeOld);
 
-            //distance
+
+            //get distance at 0
             double distanceNew = bullet.getXPosition();
-            distanceOld = ((distanceNew - distanceOld) / 
-                           (altitudeNew - altitudeOld)) * (0.0 - altitudeOld)
-                           + distanceOld;
+            distanceOld = bullet.interpolation(0.0, distanceNew, distanceOld,
+                                               altitudeNew, altitudeOld);
             
          }
          

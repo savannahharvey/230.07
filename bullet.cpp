@@ -106,5 +106,13 @@ double Bullet::interpolation(const double altitude,
 
 }
 
+double Bullet::interpolation(const double r, double r1, double r0,
+                                   double d1, double d0)
+{
+
+         return ((r1 - r0) / (d1 - d0)) * (r - d0) + r0;
+
+}
+
 
 

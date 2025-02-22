@@ -162,11 +162,13 @@ public:
 
       t = 0.01;
       double altitude;
+      double distanceTest;
       double distance;
       hangTime = 0.0;
       Acceleration gravity;
       do {
          altitude = bullet.getYPosition();
+         distanceTest = bullet.getXPosition();
          distance = bullet.getXPosition();
          currentGravity = bullet.interpolation(altitude, gravityTable);
          gravity.setDDY(-currentGravity);
@@ -189,21 +191,16 @@ public:
             //hangtime
             double beforeTime = hangTime - 0.02;
             double afterTime = hangTime - 0.01;
-            cout << "altitude before impact " << altitude << endl;
             double beforeY = altitude;
             double afterY = bullet.getYPosition();
-            cout << "altitude after impact " << bullet.getYPosition() << endl;
 
             double time = 0.0;
             hangTime = ((afterTime - beforeTime) / (afterY - altitude)) * (time - altitude) + beforeTime;
 
             //distance
-            cout << "distance before impact " << distance << endl;
             double afterX = bullet.getXPosition();
-            cout << "distance after impact " << bullet.getXPosition() << endl;
             
-            distance = ((afterTime - beforeTime) / (afterX - distance)) * (time - distance) + beforeTime;
-            cout << distance << endl;
+            distance = ((bullet.getXPosition() - distanceTest) / (bullet.getYPosition() - altitude)) * (0.0 - altitude) + distanceTest;
             
          }
          
@@ -218,7 +215,7 @@ public:
          projectilePath[i].setPixelsY(ptUpperRight.getPixelsY() / 1.5);
       }
       cout << "Distance:      " << distance              << "m   "
-           << "Altitude:      " << altitude              << "m   "
+           << "Altitude:      " << 0.0                   << "m   "
            << "Hang Time:     " << hangTime              << "s"
            << endl;
    }

@@ -88,7 +88,7 @@ double Bullet::interpolation(const double altitude, vector <pair<double, double>
    double d1;
    int i = 0;
 
-   while (i < 19)
+   while (i < table.size() - 1)
    {
       if (altitude < table[i + 1].first && altitude >= table[i].first)
       {
@@ -100,14 +100,9 @@ double Bullet::interpolation(const double altitude, vector <pair<double, double>
       }
       i++;
    }
-   if (altitude > 80000)
-   {
-      cout << "altitude super high!" << endl;
-      return 9.564;
-   }
-   }
+   return table[i].second;
 
-
+}
 
 
 

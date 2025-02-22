@@ -72,8 +72,6 @@ public:
       bullet.setDegrees(angle.getDegrees());
       bullet.setVelocity(angle, initial_speed);
       
-      t = 0.01;
-      double altitude;
       vector <pair<double, double>> gravityTable = {
            {0.0,    9.807},
            {1000.0, 9.804},
@@ -162,11 +160,14 @@ public:
         {80000.0, 269.0}
       };
 
-
+      t = 0.01;
+      double altitude;
+      double distance;
       hangTime = 0.0;
       Acceleration gravity;
       do {
          altitude = bullet.getYPosition();
+         distance = bullet.getXPosition();
          currentGravity = bullet.interpolation(altitude, gravityTable);
          gravity.setDDY(-currentGravity);
          currentAirDensity = bullet.interpolation(altitude, airDensityTable);
@@ -182,8 +183,30 @@ public:
 
          bullet.travel(t);
 
-         
          hangTime += 0.01;
+         if (bullet.getYPosition() < 0.0)
+         {
+            //hangtime
+            double beforeTime = hangTime - 0.02;
+            double afterTime = hangTime - 0.01;
+            cout << "altitude before impact " << altitude << endl;
+            double beforeY = altitude;
+            double afterY = bullet.getYPosition();
+            cout << "altitude after impact " << bullet.getYPosition() << endl;
+
+            double time = 0.0;
+            hangTime = ((afterTime - beforeTime) / (afterY - altitude)) * (time - altitude) + beforeTime;
+
+            //distance
+            cout << "distance before impact " << distance << endl;
+            double afterX = bullet.getXPosition();
+            cout << "distance after impact " << bullet.getXPosition() << endl;
+            
+            distance = ((afterTime - beforeTime) / (afterX - distance)) * (time - distance) + beforeTime;
+            cout << distance << endl;
+            
+         }
+         
       }
       while (bullet.getYPosition() > 0.0);
       
@@ -194,8 +217,8 @@ public:
          projectilePath[i].setPixelsX((double)i * 2.0);
          projectilePath[i].setPixelsY(ptUpperRight.getPixelsY() / 1.5);
       }
-      cout << "Distance:      " << bullet.getXPosition() << "m   "
-           << "Altitude:      " << bullet.getYPosition() << "m   "
+      cout << "Distance:      " << distance              << "m   "
+           << "Altitude:      " << altitude              << "m   "
            << "Hang Time:     " << hangTime              << "s"
            << endl;
    }

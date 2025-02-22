@@ -1,6 +1,6 @@
 /***********************************************************************
  * Header File:
- *    Inertia : The representation of a Inertia
+ *    Bullet : The representation of a Inertia
  * Authors:
  *    Sam Evans
  *    Savannah 
@@ -43,6 +43,7 @@ public:
 	double getDDY()				const { return a.getDDY();				}
 	double getXPosition()		const { return pos.getMetersX(); }
 	double getYPosition()		const { return pos.getMetersY(); }
+	Position getPosition()     const { return pos; }
 	Acceleration getAccleration() const { return a; }
 	double interpolation(const double altitude, vector <pair<double, double>> table);
 	double getSpeed()				const { return v.getSpeed(); }
@@ -78,7 +79,6 @@ private:
 	double time;
 	Acceleration a;
 	Angle angle;
-	double inertia;
 	Velocity v;
 	Position  pos;
 };

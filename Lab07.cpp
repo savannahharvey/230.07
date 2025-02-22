@@ -29,8 +29,7 @@
 #define bullet_diameter       154.89   // mm
 #define bullet_radius         bullet_diameter * 0.5 * 0.001
 #define bullet_surface_area   M_PI*bullet_radius*bullet_radius
-#define air_den               0.6
-#define drag_co               0.3
+
 
 using namespace std;
 
@@ -54,24 +53,25 @@ public:
 
       
 
-      // This is to make the bullet travel across the screen. Notice how there are 
-      // 20 pixels, each with a different age. This gives the appearance
-      // of a trail that fades off in the distance.
 
 
 
-      //set initial 
+
+      //set initialize and set values 
       double degrees;
       cout << "What is the angle of the howitzer where 0 is up?  ";
       cin  >> degrees;
-      
-      //bullet.setStartPos(ptHowitzer);
       bullet.setPos(0,0);
-
       angle.setDegrees(degrees);
       bullet.setDegrees(angle.getDegrees());
       bullet.setVelocity(angle, initial_speed);
+      t = 0.01;
+      double altitudeOld;
+      double distanceOld;
+      hangTime = 0.0;
+      Acceleration gravity;
       
+      // Tables
       vector <pair<double, double>> gravityTable = {
            {0.0,    9.807},
            {1000.0, 9.804},
@@ -160,61 +160,72 @@ public:
         {80000.0, 269.0}
       };
 
-      t = 0.01;
-      double altitude;
-      double distanceTest;
-      double distance;
-      hangTime = 0.0;
-      Acceleration gravity;
+      //bullet is fired and is flying
       do {
-         altitude = bullet.getYPosition();
-         distanceTest = bullet.getXPosition();
-         distance = bullet.getXPosition();
-         currentGravity = bullet.interpolation(altitude, gravityTable);
+         
+         altitudeOld = bullet.getYPosition();
+         distanceOld = bullet.getXPosition();
+         
+         //get current gravity
+         currentGravity = bullet.interpolation(altitudeOld, 
+                                               gravityTable);
          gravity.setDDY(-currentGravity);
-         currentAirDensity = bullet.interpolation(altitude, airDensityTable);
+         
+         //get current Air Density
+         currentAirDensity = bullet.interpolation(altitudeOld, 
+                                                  airDensityTable);
 
-         //get the mach aka speed of sound
-         currentSpeedOfSound = bullet.interpolation(altitude, speedOfSoundTable);
+         //get the current speed of sound
+         currentSpeedOfSound = bullet.interpolation(altitudeOld, 
+                                                    speedOfSoundTable);
+
          mach = bullet.getSpeed()/currentSpeedOfSound;
+         
          //get the drag coefficent
-         currentDragCoefficient = bullet.interpolation(mach, dragCoefficientTable);
+         currentDragCoefficient = bullet.interpolation(mach, 
+                                                       dragCoefficientTable);
 
-         bullet.setDrag(currentDragCoefficient,currentAirDensity, bullet_surface_area, bullet_weight);
+         //apply drag and gravity
+         bullet.applyDrag(currentDragCoefficient,currentAirDensity, 
+                          bullet_surface_area, bullet_weight);
+
          bullet.addAcceleration(gravity);
 
          bullet.travel(t);
 
          hangTime += 0.01;
+         
          if (bullet.getYPosition() < 0.0)
          {
-            //hangtime
+            //get hangTime at altitude 0
             double beforeTime = hangTime - 0.02;
             double afterTime = hangTime - 0.01;
-            double beforeY = altitude;
-            double afterY = bullet.getYPosition();
+            double altitudeNew = bullet.getYPosition();
 
-            double time = 0.0;
-            hangTime = ((afterTime - beforeTime) / (afterY - altitude)) * (time - altitude) + beforeTime;
+            hangTime = ((afterTime - beforeTime) / 
+                        (altitudeNew - altitudeOld)) * (0.0 - altitudeOld) 
+                        + beforeTime;
 
             //distance
-            double afterX = bullet.getXPosition();
-            
-            distance = ((bullet.getXPosition() - distanceTest) / (bullet.getYPosition() - altitude)) * (0.0 - altitude) + distanceTest;
+            double distanceNew = bullet.getXPosition();
+            distanceOld = ((distanceNew - distanceOld) / 
+                           (altitudeNew - altitudeOld)) * (0.0 - altitudeOld)
+                           + distanceOld;
             
          }
          
       }
       while (bullet.getYPosition() > 0.0);
       
-        
+      // This is to make the bullet travel across the screen. Notice how there are 
+      // 20 pixels, each with a different age. This gives the appearance
+      // of a trail that fades off in the distance.
       for (int i = 0; i < 20; i++)
       {
-         // interia
          projectilePath[i].setPixelsX((double)i * 2.0);
          projectilePath[i].setPixelsY(ptUpperRight.getPixelsY() / 1.5);
       }
-      cout << "Distance:      " << distance              << "m   "
+      cout << "Distance:      " << distanceOld   << "m   "
            << "Altitude:      " << 0.0                   << "m   "
            << "Hang Time:     " << hangTime              << "s"
            << endl;
@@ -222,20 +233,20 @@ public:
 
 
 
-   Ground ground;                 // the ground, described in ground.h
-   Position  projectilePath[20];  // path of the projectile, described in position.h
-   Position  ptHowitzer;          // location of the howitzer
-   Position  ptUpperRight;        // size of the screen
-   Angle angle;                   // angle of the howitzer, in radians 
-   double time;                   // amount of time since the last firing, in seconds
-   Bullet bullet;                 // information of the projectile fired
-   double t;
-   double hangTime;               // time bullet is in air
-   double currentGravity;
-   double currentAirDensity;
-   double currentDragCoefficient;
-   double currentSpeedOfSound;
-   double mach;
+   Ground ground;                   // the ground, described in ground.h
+   Position  projectilePath[20];    // path of the projectile, described in position.h
+   Position  ptHowitzer;            // location of the howitzer
+   Position  ptUpperRight;          // size of the screen
+   Angle angle;                     // angle of the howitzer, in radians 
+   double time;                     // amount of time since the last firing, in seconds
+   Bullet bullet;                   // information of the projectile fired
+   double t;                        // increment of time
+   double hangTime;                 // time bullet is in air
+   double currentGravity;           // value for current gravity
+   double currentAirDensity;        // value for current Air Density
+   double currentDragCoefficient;   // value for current Drag Coefficent
+   double currentSpeedOfSound;      // value for current speed of Sound
+   double mach;                     // speed in mach
 };
 
 

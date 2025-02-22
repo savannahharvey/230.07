@@ -1,11 +1,12 @@
 /***********************************************************************
  * Header File:
- *    Bullet : The representation of a Inertia
+ *    Bullet : The representation of the Bullet
  * Authors:
  *    Sam Evans
- *    Savannah 
+ *    Savannah Harvey 
  * Summary:
- *    Everything we need to know about the Inertia of an object
+ *    Everything we need to know about the bullet
+ *		Also Usain bullet
  ************************************************************************/
 
 #pragma once
@@ -45,7 +46,8 @@ public:
 	double getYPosition()		const { return pos.getMetersY(); }
 	Position getPosition()     const { return pos; }
 	Acceleration getAccleration() const { return a; }
-	double interpolation(const double altitude, vector <pair<double, double>> table);
+	double interpolation(const double altitude, 
+	vector <pair<double, double>> table);
 	double getSpeed()				const { return v.getSpeed(); }
 	
 	//setter
@@ -61,18 +63,16 @@ public:
 	{
 		v.set(angle, magnitude);
 	}
-	void setDrag(double c, double p, double area, double weight);
+	void applyDrag(double c, double p, double area, double weight);
 	void setDDX(double ddx)					{ a.setDDX(ddx);					}
 	void setDDY(double ddy)					{ a.setDDY(ddy);					}
-	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y); }
-	void setStartPos(Position& pos);
+	void setPos(double x, double y)		{pos.setMetersX(x); pos.setMetersY(y);}
 	void travel(double t);
 	void addAcceleration(const Acceleration& accel)
 	{
 		a.setDDX(accel.getDDX() + a.getDDX());
 		a.setDDY(accel.getDDY() + a.getDDY());
 	}
-	//void addDrag() {a.add(a); }
 
 
 private:

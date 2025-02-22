@@ -1,10 +1,12 @@
 ﻿/***********************************************************************
- * Source File:
- *    bullet : The representation the bullet
- * Author:
+ * Header File:
+ *    Bullet : The representation of the Bullet
+ * Authors:
  *    Sam Evans
+ *    Savannah Harvey
  * Summary:
- *    Everything we need to know about a bullet on the screen.
+ *    Everything we need to know about the bullet
+ *		Also Usain bullet
  ************************************************************************/
 
  #include "bullet.h"
@@ -12,8 +14,12 @@
  #include <math.h>
 
  /******************************************
- * BULLET  drag
- * sets the drag force in newtons (N)
+ * BULLET  applyDrag
+ *  Applies drag to the bullet's acceleration   
+ *    Calculates the drag force in newtons (N)
+ *    then converts it into drag acceleration
+ *    next it adds the drag acceleration to bullet''s acceleration
+ * 
  * d = ½ c ρ v^2 a
  *    c = drag coefficient
  *    ρ = density of the fluid/gas
@@ -21,7 +27,7 @@
  *    a = surface area
  *****************************************/
 
-void Bullet::setDrag(double c, double p, double area, double weight)
+void Bullet::applyDrag(double c, double p, double area, double weight)
 {
    double v = getSpeed();
    double drag_force = 0.5 * c * p * v * v * area;
@@ -55,10 +61,6 @@ void Bullet::travel(double t)
    v.add(a, t);
 }
 
-void Bullet::setStartPos(Position& ptHowitzer)
-{
-   pos.setMeters(ptHowitzer.getMetersX(), ptHowitzer.getMetersY());
-}
 
 /******************************************
  * Bullet  linearInterpolation
@@ -79,8 +81,8 @@ void Bullet::setStartPos(Position& ptHowitzer)
  *    d1 = The altitude for the value above
  *****************************************/
 
- //double r0, double r1, double d0, double d1,
-double Bullet::interpolation(const double altitude, vector <pair<double, double>> table)
+double Bullet::interpolation(const double altitude, 
+                             vector <pair<double, double>> table)
 {
    double r0 = 4.0;
    double r1;
